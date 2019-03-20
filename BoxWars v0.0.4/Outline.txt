@@ -1,0 +1,57 @@
+Game start
+	Animated intro -> Names of game and author
+	LanguageMenu -> Choose the language the game's text will be in
+		English, 
+		French, 
+		German, 
+		Italian, 
+		Spanish, 
+		Portuguese
+
+StartMenu -> Start/Load game, view scoreboard, view/change options, get help, exit
+	New Game	: Button, transitions to NewGame menu
+	Load Game	: Button, Not implemented
+	Scoreboard	: Button, Not implemented
+	Options		: Button, Not implemented
+	Credits		: Button, Transition to CreditMenu
+	Help		: Button, Transition to HelpMenu
+	Exit		: Button, Transitions to ExitMenu
+
+NewGameMenu -> Choose difficulty
+	Trivial			: Button, 4x heal/frame, 1x enemy spawn/frame, reset target counter = 500 frames 
+	Challenging		: Button, 3x heal/frame, 2x enemy spawn/frame, reset target counter = 350 frames
+	HardlyDoable	: Button, 2x heal/frame, 3x enemy spawn/frame, reset target counter = 200 frames
+	Impossible		: Button, 1x heal/frame, 4x enemy spawn/frame, reset target counter = 100 frames
+	Go Back To Menu	: Button
+
+CreditsMenu -> View author's comments and contact info
+	Go Back To Menu : Button, Transition to StartMenu
+
+HelpMenu ->	Show legend of player, target danger area
+	Go Back To Menu : Button, Transition to StartMenu
+
+Exit -> Reaffirm choice to exit
+	Go Back To Menu : Button, Transition to StartMenu
+	Exit			: Button, Leaves Game
+
+GameEndMenu -> Transitions to StartMenu
+	Press Enter		: Blinking text
+
+Overlay -> Game information
+	Score
+	Health
+	Difficulty
+	Game Over on player death
+	Blinking "Press Enter" on player death
+
+Arena -> Danger zone where all the enemies spawn and live
+Enemies -> Spawned per level, level 1 = 1, level 5 = 5 up to 50 max
+	size		: range from 5 to 15
+	position	: only spawns inside danger zone
+	velocity	: -4/+4 excluding 0
+	color		: range from ( 0-255,0-255,0-255 )
+
+Player 
+	size		: 10 increases by 1 every level
+	position	: ( 1100, 500 )
+	base speed	: 6
