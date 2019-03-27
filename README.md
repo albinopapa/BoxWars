@@ -158,4 +158,5 @@ Hopefully, this approach seems more familiar to dynamic polymorphism and therefo
 
 This was my approach with this project, but instead of a vector of entities, I used it for game states.  
 
-To see how things look using visitor structs, check out the VisitorStruct branch.
+To see how things look using lambda inheritance, check out the LambdaInheritance branch.
+To see how things look using visitor structs, check out the VisitorStructures branch.
