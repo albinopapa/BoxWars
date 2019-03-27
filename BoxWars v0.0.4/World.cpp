@@ -81,6 +81,11 @@ void World::ComposeFrame( D3DGraphics& _graphics )const noexcept
 	DrawExplosions( _graphics );
 }
 
+void World::OnDifficultyChange( Difficulty _difficulty ) noexcept
+{
+	difficulty = _difficulty;
+}
+
 void World::ClampToBounds( Vec2f & pos, Vec2f & vel, const RectF & rect, const RectF & bounds ) const noexcept
 {
 	if( rect.Left() < bounds.Left() || rect.Right() >= bounds.Right() )
@@ -227,7 +232,7 @@ void World::DoPlayerOnTargetCollisions( )noexcept
 		++level;
 		++score;
 		auto playerHealth = player.GetHealth();
-		switch( Settings::GetDifficulty() )
+		switch( difficulty )
 		{
 			case Difficulty::Trivial: playerHealth += 4; break;
 			case Difficulty::Challenging: playerHealth += 3; break;
@@ -258,7 +263,7 @@ void World::RemoveFinishedExplosions() noexcept
 void World::SpawnEnemy() noexcept
 {
 	int spawnCount = 0;
-	switch( Settings::GetDifficulty() )
+	switch( difficulty )
 	{
 		case Difficulty::Trivial:		spawnCount = 1; break;
 		case Difficulty::Challenging:	spawnCount = 2; break;
@@ -316,7 +321,7 @@ void World::SpawnEnemy() noexcept
 
 float World::TargetResetTimer() const noexcept
 {
-	switch( Settings::GetDifficulty() )
+	switch( difficulty )
 	{
 		case Difficulty::Trivial:		return 500.f / 60.f; break;
 		case Difficulty::Challenging:	return 350.f / 60.f; break;
@@ -328,7 +333,7 @@ float World::TargetResetTimer() const noexcept
 
 float World::ModeResetTimer() const noexcept
 {
-	switch( Settings::GetDifficulty() )
+	switch( difficulty )
 	{
 		case Difficulty::Trivial:		return 60.f / 60.f;
 		case Difficulty::Challenging:	return 50.f / 60.f;

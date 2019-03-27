@@ -13,9 +13,13 @@ void TextBox::Draw( const Vec2i& position, int width, int height, const Font& fo
 	// Draw top of box outline
 	gfx.DrawTextBoxTopLeft( position.x + ConvertCol( 0 ), position.y + ConvertRow( 0 ), font, Colors::white );
 
-	gfx.DrawString( name, position.x + ConvertCol( 1 ), position.y + ConvertRow( 0 ), font, Colors::white );
+	const auto len = ( name != nullptr ) ?
+		int( std::char_traits<char>::length( name ) ) : 1;
 
-	for( int col = int( std::char_traits<char>::length( name ) ); col < lastCol; ++col )
+	if(name)
+		gfx.DrawString( name, position.x + ConvertCol( 1 ), position.y + ConvertRow( 0 ), font, Colors::white );
+
+	for( int col = len; col < lastCol; ++col )
 	{
 		const auto x = position.x + ConvertCol( col );
 		const auto y = position.y + ConvertRow( 0 );

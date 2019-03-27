@@ -1,11 +1,11 @@
 #pragma once
 
+#include "Constants.h"
 #include "D3DGraphics.h"
 #include "Keyboard.h"
 #include "Mouse.h"
 #include "RandomNumber.h"
 #include "Rect.h"
-#include "Settings.h"
 #include "Sound.h"
 
 class Entity
@@ -67,6 +67,7 @@ public:
 	const Entity& GetPlayer()const noexcept { return player; }
 	std::uint32_t GetScore()const noexcept { return score; }
 
+	void OnDifficultyChange( Difficulty _difficulty )noexcept;
 private:
 	void ClampToBounds( Vec2f& pos, Vec2f& vel, const RectF& rect, const RectF& bounds )const noexcept;
 	void UpdatePlayer( KeyboardClient& _keyboard, float _dt )noexcept;
@@ -103,4 +104,6 @@ private:
 	float explosionTimer = explosionTime;
 	float modeTimer = 0.f;
 	std::uint32_t score = 0, level = 1;
+	Difficulty difficulty = Difficulty::Trivial;
+
 };

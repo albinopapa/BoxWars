@@ -97,7 +97,10 @@ void D3DGraphics::DrawString( const char* string, int xoff, int yoff, const Font
 {
 	for( int index = 0; string[ index ] != '\0'; index++ )
 	{
-		DrawChar( string[ index ], xoff + index * font.CharWidth(), yoff, font, color );
+		const int x = xoff + ( index * font.CharWidth() );
+		const int y = yoff;
+
+		DrawChar( string[ index ], x, y, font, color );
 	}
 }
 void D3DGraphics::DrawDisc( int cx, int cy, int r, Color color )noexcept
