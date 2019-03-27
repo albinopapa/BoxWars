@@ -66,6 +66,7 @@ namespace Colors
 	constexpr auto white = Color( 255, 255, 255 );
 	constexpr auto black = Color( 0, 0, 0 );
 	constexpr auto gray = Color{ 128, 128, 128 };
+	constexpr auto dark_gray = Color{ 64, 64, 64 };
 
 	constexpr auto red = Color( 255, 0, 0 );
 	constexpr auto dark_red = Color{ 128,0,0 };

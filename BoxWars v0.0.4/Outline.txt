@@ -44,7 +44,15 @@ Overlay -> Game information
 	Game Over on player death
 	Blinking "Press Enter" on player death
 
-Arena -> Danger zone where all the enemies spawn and live
+screenRatioX = ( 800 / 1440 )
+screenRatioY = ( 600 /  700 )
+
+Arena -> Danger zone where all the enemies spawn and live 
+	x = 20
+	y = 20 
+	width  = ( ScreenWidth  * screenRatioX ) 
+	height = ( ScreenHeight * screenRatioY )
+
 Enemies -> Spawned per level, level 1 = 1, level 5 = 5 up to 50 max
 	size		: range from 5 to 15
 	position	: only spawns inside danger zone

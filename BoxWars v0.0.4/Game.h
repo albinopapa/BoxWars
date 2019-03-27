@@ -2,33 +2,37 @@
 
 #include "D3DGraphics.h"
 #include "Keyboard.h"
+#include "States.h"
 #include "Mouse.h"
 #include "Sound.h"
-#include "LanguageStrings.h"
-#include "RandomNumber.h"
-
-#include "LanguageMenu.h"
-#include <variant>
-
+#include "Timer.h"
+#include "Window.h"
 
 
 class Game
 {
-	using Menu = std::variant<LanguageMenu>;
-
 public:
-	Game( HWND hWnd, KeyboardServer& kServer, const MouseServer& mServer );
-	void Go();
+	Game( Window& _window );
+	Game( const Game& ) = delete;
+	Game( Game&& ) = default;
+
+	Game& operator=( const Game& ) = delete;
+	Game& operator=( Game&& ) = default;
+
+	void Go()noexcept;
+	KeyboardClient& GetKeyboard()noexcept { return kbd; }
+	void Quit()const noexcept { win.Kill(); }
 private:
-	void UpdateModel();
-	void ComposeFrame();
+	void UpdateModel()noexcept;
+	void ComposeFrame()noexcept;
+	
 
 private:
-	//framework stuff
 	D3DGraphics gfx;
 	KeyboardClient kbd;
 	MouseClient mouse;
 	DSound audio;
-
-
+	FrameTimer timer;
+	Window& win;
+	State state;
 };

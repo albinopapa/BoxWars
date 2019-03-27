@@ -1,19 +1,38 @@
 
 #pragma once
 
+#include "Def.h"
+
+#include <optional>
+#include <queue>
+#include <variant>
+
+struct MouseMove { int x, y; };
+struct LeftPress { int x, y; };
+struct LeftRelease { int x, y; };
+struct RightPress { int x, y; };
+struct RightRelease { int x, y; };
+
+
 class MouseServer;
 
 class MouseClient
 {
 public:
-	MouseClient( const MouseServer& server );
-	int GetMouseX() const;
-	int GetMouseY() const;
-	bool LeftIsPressed() const;
-	bool RightIsPressed() const;
-	bool IsInWindow() const;
+	using Event = std::variant<MouseMove, LeftPress, LeftRelease, RightPress, RightRelease>;
+
+public:
+	MouseClient( MouseServer& server ) noexcept;
+	int GetMouseX() const noexcept;
+	int GetMouseY() const noexcept;
+	Point GetPosition()const noexcept;
+	bool LeftIsPressed() const noexcept;
+	bool RightIsPressed() const noexcept;
+	bool IsInWindow() const noexcept;
+	std::optional<Event> PeekEvent()const noexcept;
+	Event ReadEvent()noexcept;
 private:
-	const MouseServer& server;
+	MouseServer& server;
 };
 
 class MouseServer
@@ -28,11 +47,13 @@ public:
 	void OnLeftReleased();
 	void OnRightPressed();
 	void OnRightReleased();
-	bool IsInWindow() const;
+	bool IsInWindow() const noexcept;
 private:
 	int x;
 	int y;
 	bool leftIsPressed;
 	bool rightIsPressed;
 	bool isInWindow;
+	std::queue<MouseClient::Event> events;
+
 };

@@ -23,12 +23,12 @@
 #include "ChiliMath.h"
 
 template <typename T>
-class _Vec2
+class Vec2
 {
 public:
 	// Constructors
-	constexpr _Vec2() = default;
-	constexpr _Vec2( T x,T y )noexcept
+	constexpr Vec2() = default;
+	constexpr Vec2( T x,T y )noexcept
 		:
 		x( x ),
 		y( y )
@@ -36,37 +36,37 @@ public:
 
 	// Conversion operator
 	template <typename T2>
-	constexpr explicit operator _Vec2<T2>() const noexcept
+	constexpr explicit operator Vec2<T2>() const noexcept
 	{
 		return{ (T2)x,(T2)y };
 	}
 
 	// Unary operator
-	constexpr _Vec2	operator-() const noexcept
+	constexpr Vec2	operator-() const noexcept
 	{
-		return _Vec2( -x,-y );
+		return Vec2( -x,-y );
 	}
 
 	// Assignment operators
-	_Vec2&	operator+=( const _Vec2 &rhs ) noexcept
+	Vec2&	operator+=( const Vec2 &rhs ) noexcept
 	{
 		x += rhs.x;
 		y += rhs.y;
 		return *this;
 	}
-	_Vec2&	operator-=( const _Vec2 &rhs ) noexcept
+	Vec2&	operator-=( const Vec2 &rhs ) noexcept
 	{
 		x -= rhs.x;
 		y -= rhs.y;
 		return *this;
 	}
-	_Vec2&	operator*=( const T &rhs ) noexcept
+	Vec2&	operator*=( const T &rhs ) noexcept
 	{
 		x *= rhs;
 		y *= rhs;
 		return *this;
 	}
-	_Vec2&	operator/=( const T &rhs ) noexcept
+	Vec2&	operator/=( const T &rhs ) noexcept
 	{
 		x /= rhs;
 		y /= rhs;
@@ -74,32 +74,32 @@ public:
 	}
 
 	// Binary operators
-	constexpr _Vec2	operator+( const _Vec2 &rhs ) const noexcept
+	constexpr Vec2	operator+( const Vec2 &rhs ) const noexcept
 	{
-		return _Vec2( *this ) += rhs;
+		return Vec2( *this ) += rhs;
 	}
-	constexpr _Vec2	operator-( const _Vec2 &rhs ) const noexcept
+	constexpr Vec2	operator-( const Vec2 &rhs ) const noexcept
 	{
-		return _Vec2( *this ) -= rhs;
+		return Vec2( *this ) -= rhs;
 	}
-	constexpr _Vec2	operator*( const T &rhs ) const noexcept
+	constexpr Vec2	operator*( const T &rhs ) const noexcept
 	{
-		return _Vec2( *this ) *= rhs;
+		return Vec2( *this ) *= rhs;
 	}
-	constexpr T		operator*( const _Vec2 &rhs ) const noexcept
+	constexpr T		operator*( const Vec2 &rhs ) const noexcept
 	{
 		return x * rhs.x + y * rhs.y;
 	}
-	constexpr _Vec2	operator/( const T &rhs ) const noexcept
+	constexpr Vec2	operator/( const T &rhs ) const noexcept
 	{
-		return _Vec2( *this ) /= rhs;
+		return Vec2( *this ) /= rhs;
 	}
 
-	constexpr bool	operator==( const _Vec2 &rhs ) const noexcept
+	constexpr bool	operator==( const Vec2 &rhs ) const noexcept
 	{
 		return x == rhs.x && y == rhs.y;
 	}
-	constexpr bool	operator!=( const _Vec2 &rhs ) const noexcept
+	constexpr bool	operator!=( const Vec2 &rhs ) const noexcept
 	{
 		return !(*this == rhs);
 	}
@@ -113,24 +113,24 @@ public:
 		return sqrt( LenSq() );
 	}
 
-	_Vec2&	Normalize() noexcept
+	Vec2&	Normalize() noexcept
 	{
 		const auto len = Len();
 		*this *= ( len != static_cast< T >( 0 ) ? 1.f / len : len );
 		return *this;
 	}
-	constexpr _Vec2	Normalize() const noexcept
+	constexpr Vec2	Normalize() const noexcept
 	{
 		const auto len = Len();
 		return *this * ( len != static_cast< T >( 0 ) ? 1.f / len : len );
 	}
 
-	constexpr _Vec2	InterpolateTo( const _Vec2& dest,T alpha ) const noexcept
+	constexpr Vec2	InterpolateTo( const Vec2& dest,T alpha ) const noexcept
 	{
 		const auto range = dest - ( *this );
 		return ( *this ) + ( range * alpha );
 	}
-	_Vec2 &InterpolateTo( const _Vec2 &dest, T alpha ) noexcept
+	Vec2 &InterpolateTo( const Vec2 &dest, T alpha ) noexcept
 	{
 		const auto range = dest - ( *this );
 		( *this ) += ( range * alpha );
@@ -138,21 +138,21 @@ public:
 	}
 
 public:
-	T x;
-	T y;
+	T x = T( 0 );
+	T y = T( 0 );
 };
 
 template<class T>
-_Vec2<T> operator*( const float S, const _Vec2<T>& V ) noexcept
+Vec2<T> operator*( const float S, const Vec2<T>& V ) noexcept
 {
 	return V * S;
 }
 template<class T>
-_Vec2<T> Reflect( const _Vec2<T> &Direction, const _Vec2<T> &Normal ) noexcept
+Vec2<T> Reflect( const Vec2<T> &Direction, const Vec2<T> &Normal ) noexcept
 {
 	return Direction - ( ( 2.f * ( Direction * Normal ) ) * Normal );
 }
 
-using Vec2f = _Vec2<float>;
-using Vec2d = _Vec2<double>;
-using Vec2i = _Vec2<int>;
+using Vec2f = Vec2<float>;
+using Vec2d = Vec2<double>;
+using Vec2i = Vec2<int>;

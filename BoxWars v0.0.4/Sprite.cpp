@@ -80,6 +80,16 @@ unsigned int Sprite::Height() const noexcept
 	return height;
 }
 
+const Color * Sprite::GetBuffer() const noexcept
+{
+	return surface.get();
+}
+
+void Sprite::Clear() noexcept
+{
+	memset( surface.get(), 0x0, width * height * sizeof( Color ) );
+}
+
 bool Sprite::IsKey( Color color ) const noexcept
 {
 	return color == key;

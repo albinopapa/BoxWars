@@ -10,7 +10,10 @@ class Sprite
 {
 public:
 	using value_type = Color;
-
+	using pointer = Color * ;
+	using const_pointer = const Color*;
+	using reference = Color & ;
+	using const_reference = const Color&;
 public:
 	Sprite() = default;
 	Sprite( const char* filename, Color _key = Color{ 255,0,255 } );
@@ -28,6 +31,8 @@ public:
 	unsigned int Width()const noexcept;
 	unsigned int Height()const noexcept;
 
+	const Color* GetBuffer()const noexcept;
+	void Clear()noexcept;
 	bool IsKey( Color color )const noexcept;
 private:
 	unsigned int width = 0u, height = 0u;
@@ -40,6 +45,10 @@ class D3D9RenderTarget
 {
 public:
 	using value_type = Color;
+	using pointer = Color * ;
+	using const_pointer = const Color*;
+	using reference = Color & ;
+	using const_reference = const Color&;
 public:
 	D3D9RenderTarget( IDirect3DSurface9* _backBuffer )
 		:
@@ -50,14 +59,22 @@ public:
 		{
 			throw std::runtime_error( "Failed to lock back buffer." );
 		}
-		stride = backRect.Pitch / sizeof( Color );
+		stride = static_cast< size_t >( backRect.Pitch ) / sizeof( Color );
 		buffer = reinterpret_cast< Color* >( backRect.pBits );
 	}
-
-	Color& operator()( int _x, int _y )
+	reference operator()( size_t x, size_t y )
 	{
-		return buffer[ _x + ( _y * stride ) ];
+		return buffer[ x + ( y * stride ) ];
 	}
+	void Copy( const Color* pSource, int width, int height )
+	{
+		const auto count = width * sizeof( Color );
+		for( int y = 0; y < height; ++y )
+		{
+			memcpy( std::addressof( buffer[ y * stride ] ), std::addressof( pSource[ y * width ] ), count );
+		}
+	}
+
 	~D3D9RenderTarget()
 	{
 		m_backBuffer->UnlockRect();
@@ -65,5 +82,5 @@ public:
 private:
 	IDirect3DSurface9* m_backBuffer = nullptr;
 	Color* buffer = nullptr;
-	int stride = 0;
+	size_t stride = 0;
 };

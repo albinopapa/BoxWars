@@ -1,17 +1,25 @@
 
 #pragma once
-#include <windows.h>
+
+#include <chrono>
 
 class Timer
 {
 public:
-	Timer();
-	void StartWatch();
-	void StopWatch();
-	float GetTimeMilli() const;
+	void StartWatch()noexcept;
+	void StopWatch()noexcept;
+	float GetTimeMilli() const noexcept;
+
 private:
-	float invFreqMilli;
-	bool watchStopped;
-	__int64 currentCount;
-	__int64 startCount;
+	std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now();
+	std::chrono::steady_clock::time_point current;
+	bool watchStopped = false;
+};
+
+class FrameTimer
+{
+public:
+	float Mark()noexcept;
+private:
+	Timer timer;
 };

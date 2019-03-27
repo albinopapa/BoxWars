@@ -2,7 +2,7 @@
 
 enum class Language
 {
-	English, French, German, Italian, Spanish, Portuguese
+	English, French, German, Italian, Spanish, Portuguese, Count
 };
 
 

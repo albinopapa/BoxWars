@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Vec2.h"
+
 template<typename T>
 struct Rect
 {
@@ -39,15 +41,30 @@ struct Rect
 	constexpr T Bottom()const noexcept { return y + height; }
 
 	// TODO: Implement Vec2<T>
-	/*Rect& operator+=( const Rect& _other )noexcept
+	Rect& operator+=( const Vec2<T>& _other )noexcept
 	{
 		x + _other.x;
 		y + _other.y;
 		return *this;
-	}*/
+	}
+	Rect& operator-=( const Vec2<T>& _offset )noexcept
+	{
+
+	}
 	
 	T x = T( 0 ), y = T( 0 ), width = T( 0 ), height = T( 0 );
 };
 
+template<typename T>
+constexpr Rect<T> operator+( const Rect<T>& _rect, const Vec2<T>& _offset )noexcept
+{
+	return { _rect.x + _offset.x, _rect.y + _offset.y, _rect.width, _rect.height };
+}
+
+template<typename T>
+constexpr Rect<T> operator-( const Rect<T>& _rect, const Vec2<T>& _offset )noexcept
+{
+	return { _rect.x - _offset.x, _rect.y - _offset.y, _rect.width, _rect.height };
+}
 using RectI = Rect<int>;
 using RectF = Rect<float>;

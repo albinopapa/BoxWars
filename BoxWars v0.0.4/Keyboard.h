@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../D3D11Lib/D3D11Lib/Def.h"
+#include "Def.h"
 #include <bitset>
 #include <optional>
 #include <queue>
@@ -42,3 +42,7 @@ private:
 	std::queue<char> m_chars;
 	std::queue<KeyboardClient::Event> m_events;
 };
+
+using KeyPressEvent = KeyboardClient::KeyPress;
+using KeyReleaseEvent = KeyboardClient::KeyRelease;
+using KeyEvent = KeyboardClient::Event;

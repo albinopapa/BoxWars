@@ -1,14 +1,14 @@
 #include "ChiliMath.h"
+#include "Constants.h"
 #include "D3DGraphics.h"
-#include "../../D3D11Lib/D3D11Lib/Def.h"
-#include "Bitmap.h"
+#include "Window.h"
 #include <cassert>
 #pragma comment(lib, "d3d9.lib")
 
 D3DGraphics::D3DGraphics( HWND hWnd )
 	:
 	pDirect3D( Direct3DCreate9( D3D_SDK_VERSION ) ),
-	surface( TOTALSCREENWIDTH, TOTALSCREENHEIGHT )
+	surface( ScreenWidth, ScreenHeight )
 {
 	assert( pDirect3D != nullptr );
 
@@ -32,42 +32,61 @@ void D3DGraphics::PutPixel( int x, int y, Color color )noexcept
 {
 	assert( x >= 0 );
 	assert( y >= 0 );
-	assert( x < TOTALSCREENWIDTH );
-	assert( y < TOTALSCREENHEIGHT );
+	assert( x < ScreenWidth );
+	assert( y < ScreenHeight );
 
 	surface( x, y ) = color;
 }
 void D3DGraphics::BeginFrame()noexcept
-{	
-	fill2d( Colors::gray, RectI{ 0, 0, TOTALSCREENWIDTH, TOTALSCREENHEIGHT }, surface );
+{
+	surface.Clear();
 }
 void D3DGraphics::EndFrame()
 {
 	{
 		D3D9RenderTarget target( pBackBuffer.Get() );
-
-		copy2d( RectI{ 0,0,TOTALSCREENWIDTH,TOTALSCREENHEIGHT }, surface, target );
+		copy2d( RectI{ 0, 0, ScreenWidth, ScreenHeight }, surface, target );
 	}
 
 	const auto result = pDevice->Present( nullptr, nullptr, nullptr, nullptr );
 	assert( !FAILED( result ) );
 }
 
+void D3DGraphics::DrawBezier( const Point & _p0, const Point & _p1, const Point & _p2, Color _color ) noexcept
+{
+	constexpr auto step = .1f;
+
+	const auto range0 = ( _p1 - _p0 );
+	const auto range1 = ( _p2 - _p1 );
+	const auto range2 = ( range1 - range0 );
+	const auto doubleRange0 = ( range0 * 2 );
+
+	constexpr auto end = ( 1.f + std::numeric_limits<float>::epsilon() );
+	auto p0 = _p0;
+	for( float t = step; t <= end; t += step )
+	{
+		const auto p1 = _p0 + ( doubleRange0 + ( range2 * t ) ) * t;
+
+		DrawLine( p0.x, p0.y, p1.x, p1.y, _color );
+		p0 = p1;
+	}
+}
+
 void D3DGraphics::DrawSprite( int xoff, int yoff, const Sprite& sprite )noexcept
 {	
-	auto isAlpha = [ & ]( const Color& _color ) { return !sprite.IsKey( _color ); };
+	auto notIsAlpha = [ & ]( const Color& _color ) { return !sprite.IsKey( _color ); };
 
 	const auto srcRect = RectI{ 0,0,int( sprite.Width() ),int( sprite.Height() ) };
 	const auto dstRect = RectI{ xoff,yoff,int( sprite.Width() ),int( sprite.Height() ) };
 
-	copy2d_if( srcRect, dstRect, sprite, surface, isAlpha );
+	copy2d_if( srcRect, dstRect, sprite, surface, notIsAlpha );
 }
 void D3DGraphics::DrawChar( char c, int xoff, int yoff, const Font& font, Color color )noexcept
 {
 	const auto srcRect = font.CharRect( c );
 	const auto dstRect = RectI{ 
-		xoff - srcRect.Left(),
-		yoff - srcRect.Top(),
+		xoff,
+		yoff,
 		srcRect.width,
 		srcRect.height 
 	};
@@ -151,26 +170,28 @@ void D3DGraphics::DrawLine( int x1, int y1, int x2, int y2, Color color )noexcep
 		}
 	}
 }
-void D3DGraphics::DrawCircle( int centerX, int centerY, int radius, Color color )noexcept
+void D3DGraphics::DrawCircle( int cx, int cy, int radius, Color color )noexcept
 {
-	auto Square = []( auto _value ) {return _value * _value; };
-	auto fill4 = [&]( int _x, int _y )
-	{
-		PutPixel( centerX + _x, centerY + _y, color );
-		PutPixel( centerX - _x, centerY + _y, color );
-		PutPixel( centerX + _x, centerY - _y, color );
-		PutPixel( centerX - _x, centerY - _y, color );
-	};
+	if( radius == 0 )return;
 
-	const int rSquared = sq( radius );
-	const int xPivot = ( int )( radius * 0.707107f + 0.5f );
-	for( int x = 0; x <= xPivot; x++ )
+	const auto iRadSq = sq( radius - 1 );
+	const auto oRadSq = sq( radius );
+	const auto bounds =
+		ClipToScreen( cx - radius, cy - radius, radius * 2, radius * 2 ) + Vec2i( cx, cy );
+
+	int i = 0;
+	for_each2d( bounds, surface, [ & ]( Color& dest )
 	{
-		const auto ySq = ( float )( rSquared - Square( x ) );
-		const int y = ( int )( std::sqrt( ySq ) + 0.5f );
-		fill4( x, y );
-		fill4( y, x );
-	}
+		const int x = ( i % bounds.width ) - radius;
+		const int y = ( i / bounds.width ) - radius;
+		const auto distSq = sq( x ) + sq( y );
+
+		++i;
+		if( distSq >= iRadSq && distSq < oRadSq )
+		{
+			dest = color;
+		}
+	} );
 }
 
 void D3DGraphics::DrawRectangle( const RectI& _rect, Color color )noexcept
@@ -190,4 +211,67 @@ void D3DGraphics::DrawEmptyRectangle( const RectI& _rect, Color color )noexcept
 		PutPixel( x, _rect.Top(), color );
 		PutPixel( x, _rect.Bottom(), color );
 	}
+}
+
+void D3DGraphics::DrawTextBoxTopLeft( int _x, int _y, const Font& _font, Color _color )noexcept
+{
+	const auto charCenterX = ( _font.CharWidth() / 2 );
+	const auto charCenterY = ( _font.CharHeight() / 2 );
+
+	const auto right = _x + _font.CharWidth();
+	const auto bottom = _y + _font.CharHeight();
+	const auto center = _x + charCenterX;
+	const auto middle = _y + charCenterY;
+
+	DrawLine( center, middle, right, middle, _color );
+	DrawLine( center, middle, center, bottom, _color );
+}
+void D3DGraphics::DrawTextBoxTopRight( int _x, int _y, const Font& _font, Color _color )noexcept
+{
+	const auto charCenterX = ( _font.CharWidth() / 2 );
+	const auto charCenterY = ( _font.CharHeight() / 2 );
+
+	const auto left = _x;
+	const auto center = _x + charCenterX;
+	const auto middle = _y + charCenterY;
+	const auto bottom = _y + _font.CharHeight();
+
+	DrawLine( left, middle, center, middle, _color );
+	DrawLine( center, middle, center, bottom, _color );
+}
+void D3DGraphics::DrawTextBoxBottomLeft( int _x, int _y, const Font& _font, Color _color )noexcept
+{
+	const auto charCenterX = ( _font.CharWidth() / 2 );
+	const auto charCenterY = ( _font.CharHeight() / 2 );
+
+	const auto center = _x + charCenterX;
+	const auto top = _y;
+	const auto right = _x + _font.CharWidth();
+	const auto middle = _y + charCenterY;
+
+	DrawLine( center, top, center, middle, _color );
+	DrawLine( center, middle, right, middle, _color );
+}
+void D3DGraphics::DrawTextBoxBottomRight( int _x, int _y, const Font& _font, Color _color )noexcept
+{
+	const auto charCenterX = ( _font.CharWidth() / 2 );
+	const auto charCenterY = ( _font.CharHeight() / 2 );
+
+	const auto left = _x;
+	const auto top = _y;
+	const auto center = _x + charCenterX;
+	const auto middle = _y + charCenterY;
+
+	DrawLine( center, top, center, middle, _color );
+	DrawLine( left, middle, center, middle, _color );
+}
+
+RectI D3DGraphics::ClipToScreen( int x, int y, int width, int height ) const noexcept
+{
+	return {
+		max( -x, 0 ),
+		max( -y,0 ),
+		min( ScreenWidth - x,width ),
+		min( ScreenHeight - y,height )
+	};
 }

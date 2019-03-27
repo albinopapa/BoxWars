@@ -1,35 +1,33 @@
-
 #include "Timer.h"
 
-Timer::Timer()
-{
-	__int64 frequency;
-	QueryPerformanceFrequency( (LARGE_INTEGER*)&frequency );
-	invFreqMilli = 1.0f / (float)((double)frequency / 1000.0);
-	StartWatch();
-}
-void Timer::StopWatch()
+using steady_clock = std::chrono::steady_clock;
+
+void Timer::StopWatch()noexcept
 {
 	if( !watchStopped )
 	{
-		QueryPerformanceCounter( (LARGE_INTEGER*)&currentCount );
+		current = steady_clock::now();
 		watchStopped = true;
 	}
 }
-void Timer::StartWatch()
+
+void Timer::StartWatch()noexcept
 {
 	watchStopped = false;
-	QueryPerformanceCounter( (LARGE_INTEGER*)&startCount );
+	start = steady_clock::now();
 }
-float Timer::GetTimeMilli() const
+
+float Timer::GetTimeMilli() const noexcept
 {
-	if( !watchStopped )
-	{
-		QueryPerformanceCounter( (LARGE_INTEGER*)&currentCount );
-		return (float)(currentCount - startCount) * invFreqMilli;
-	}
-	else
-	{
-		return (float)(currentCount - startCount) * invFreqMilli;
-	}
+	return  ( !watchStopped ) ?
+		std::chrono::duration<float>( steady_clock::now() - start ).count():
+		std::chrono::duration<float>( current - start ).count();
+}
+
+float FrameTimer::Mark()noexcept
+{
+	timer.StopWatch();
+	const auto elapsed = timer.GetTimeMilli();
+	timer.StartWatch();
+	return elapsed;
 }

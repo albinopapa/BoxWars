@@ -119,42 +119,47 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\D3D11Lib\D3D11Lib\Def.h" />
     <ClInclude Include="Bitmap.h" />
-    <ClInclude Include="Button.h" />
     <ClInclude Include="ChiliMath.h" />
     <ClInclude Include="Color.h" />
+    <ClInclude Include="Constants.h" />
     <ClInclude Include="D3DGraphics.h" />
+    <ClInclude Include="Def.h" />
     <ClInclude Include="Font.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="Keyboard.h" />
-    <ClInclude Include="LanguageMenu.h" />
+    <ClInclude Include="States.h" />
     <ClInclude Include="LanguageStrings.h" />
     <ClInclude Include="Mouse.h" />
     <ClInclude Include="RandomNumber.h" />
     <ClInclude Include="Rect.h" />
     <ClInclude Include="Resource.h" />
+    <ClInclude Include="Settings.h" />
     <ClInclude Include="Sound.h" />
     <ClInclude Include="Sprite.h" />
-    <ClInclude Include="StartMenu.h" />
     <ClInclude Include="Timer.h" />
+    <ClInclude Include="UIButton.h" />
+    <ClInclude Include="UITextBox.h" />
     <ClInclude Include="Vec2.h" />
+    <ClInclude Include="Window.h" />
     <ClInclude Include="World.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bitmap.cpp" />
-    <ClCompile Include="Button.cpp" />
     <ClCompile Include="D3DGraphics.cpp" />
     <ClCompile Include="Font.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="Keyboard.cpp" />
-    <ClCompile Include="LanguageMenu.cpp" />
+    <ClCompile Include="States.cpp" />
     <ClCompile Include="Mouse.cpp" />
+    <ClCompile Include="Settings.cpp" />
     <ClCompile Include="Sound.cpp" />
     <ClCompile Include="Sprite.cpp" />
-    <ClCompile Include="StartMenu.cpp" />
     <ClCompile Include="Timer.cpp" />
-    <ClCompile Include="Windows.cpp" />
+    <ClCompile Include="UIButton.cpp" />
+    <ClCompile Include="UITextBox.cpp" />
+    <ClCompile Include="Window.cpp" />
+    <ClCompile Include="Main.cpp" />
     <ClCompile Include="World.cpp" />
   </ItemGroup>
   <ItemGroup>
