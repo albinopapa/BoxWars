@@ -157,3 +157,5 @@ void Game::ComposeFrame()
 Hopefully, this approach seems more familiar to dynamic polymorphism and therefore easier to follow.  The implementation of each function is even easy to understand.
 
 This was my approach with this project, but instead of a vector of entities, I used it for game states.  
+
+To see how things look using visitor structs, check out the VisitorStruct branch.
