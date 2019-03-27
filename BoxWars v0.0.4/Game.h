@@ -14,6 +14,11 @@
 #include "World.h"
 
 
+template<typename... Lambdas>
+struct Overload :Lambdas...{ using Lambdas::operator()...; };
+
+template<typename... Lambdas> Overload( Lambdas... )->Overload<Lambdas...>;
+
 class Game
 {
 public:
@@ -33,128 +38,22 @@ private:
 
 	class MenuBase {};
 
-	class LanguageMenu : public MenuBase{};
-	class StartMenu : public MenuBase{};
-	class NewGameMenu : public MenuBase{};
-	class LoadGameMenu : public MenuBase{};
-	class ScoreboardMenu : public MenuBase{};
-	class OptionsMenu : public MenuBase{};
-	class CreditsMenu : public MenuBase{};
-	class HelpMenu : public MenuBase {};
-	class ExitMenu : public MenuBase {};
+	class LanguageMenu		: public MenuBase {};
+	class StartMenu			: public MenuBase {};
+	class NewGameMenu		: public MenuBase {};
+	class LoadGameMenu		: public MenuBase {};
+	class ScoreboardMenu	: public MenuBase {};
+	class OptionsMenu		: public MenuBase {};
+	class CreditsMenu		: public MenuBase {};
+	class HelpMenu			: public MenuBase {};
+	class ExitMenu			: public MenuBase {};
 
 	class IntroState {};
 	class PlayState {};
 	class GameOverState {};
 
-	void OnTransition( IntroState& _state )noexcept;
-	void OnTransition( LanguageMenu& _state )noexcept;
-	void OnTransition( StartMenu& _state )noexcept;
-	void OnTransition( NewGameMenu& _state )noexcept;
-	void OnTransition( LoadGameMenu& _state )noexcept;
-	void OnTransition( ScoreboardMenu& _state )noexcept;
-	void OnTransition( OptionsMenu& _state )noexcept;
-	void OnTransition( CreditsMenu& _state )noexcept;
-	void OnTransition( HelpMenu& _state )noexcept;
-	void OnTransition( ExitMenu& _state )noexcept;
-	void OnTransition( PlayState& _state )noexcept;
-	void OnTransition( GameOverState& _state )noexcept;
-
 	void IncrementCursor()noexcept;
 	void DecrementCursor()noexcept;
-
-	void OnEnterPress( IntroState& _state )noexcept;
-	void OnEnterPress( LanguageMenu& _state )noexcept;
-	void OnEnterPress( StartMenu& _state )noexcept;
-	void OnEnterPress( NewGameMenu& _state )noexcept;
-	void OnEnterPress( LoadGameMenu& _state )noexcept;
-	void OnEnterPress( ScoreboardMenu& _state )noexcept;
-	void OnEnterPress( OptionsMenu& _state )noexcept;
-	void OnEnterPress( CreditsMenu& _state )noexcept;
-	void OnEnterPress( HelpMenu& _state )noexcept;
-	void OnEnterPress( ExitMenu& _state )noexcept;
-	void OnEnterPress( PlayState& _state )noexcept;
-	void OnEnterPress( GameOverState& _state )noexcept;
-
-	void OnUpdate( IntroState& _state, float _dt )noexcept;
-	void OnUpdate( PlayState& _state, float _dt )noexcept;
-	void OnUpdate( GameOverState& _state, float _dt )noexcept;
-
-	void OnDraw( const IntroState& _state )noexcept;
-	void OnDraw( const CreditsMenu& _state )noexcept;
-	void OnDraw( const MenuBase& _state )noexcept;
-	void OnDraw( const PlayState& _state )noexcept;
-	void OnDraw( const GameOverState& _state )noexcept;
-
-	class TransitionVisitor
-	{
-	public:
-		TransitionVisitor( Game& _game )noexcept;
-
-		template<typename T>
-		void operator()( T& _state )noexcept
-		{
-			game.OnTransition( _state );
-		}
-
-	private:
-		Game& game;
-	};
-	class UpdateVisitor
-	{
-	public:
-		UpdateVisitor( Game& _game, float _dt )noexcept;
-
-		void operator()( IntroState& _state )noexcept 
-		{
-			game.OnUpdate( _state, dt );
-		}
-		void operator()( PlayState& _state )noexcept
-		{
-			game.OnUpdate( _state, dt );
-		}
-		void operator()( GameOverState& _state )noexcept
-		{
-			game.OnUpdate( _state, dt );
-		}
-		void operator()( MenuBase& _state )noexcept {}
-	private:
-		Game& game;
-		float dt = 0.f;
-	};
-
-	class HandleKeyEventVisitor
-	{
-	public:
-		HandleKeyEventVisitor( Game& _game )noexcept;
-
-		template<typename StateType>
-		void operator()( StateType&, const KeyReleaseEvent& )noexcept {}
-
-		template<typename StateType>
-		void operator()( StateType& _state, const KeyPressEvent& _keyevent )noexcept
-		{
-			switch( _keyevent.code )
-			{
-				case VK_UP:		game.DecrementCursor(); break;
-				case VK_DOWN:	game.IncrementCursor(); break;
-				case VK_RETURN: game.OnEnterPress( _state ); break;
-				case VK_ESCAPE: game.win.Kill(); break;
-			}
-		}
-	private:
-		Game& game;
-	};
-
-	class DrawVisitor
-	{
-	public:
-		DrawVisitor( Game& _game )noexcept;
-		template<typename StateType>
-		void operator()( const StateType& _state )const noexcept { game.OnDraw( _state ); }
-	private:
-		Game& game;
-	};
 
 private:
 	using State = std::variant<
